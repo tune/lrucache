@@ -15,7 +15,7 @@ describe LRUCache do
 	
 		it '初期化子に与えたLRUCacheのサイズが正しいこと' do
 			@lru = LRUCache.new(2)
-			@lru.size.should == 2
+			@lru.max_size.should == 2
 		end
 
 		it '0以下の値を初期化子に与えるとLRUCacheExceptionを返す' do

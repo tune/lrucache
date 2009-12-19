@@ -1,29 +1,29 @@
 class LRUCache
-	attr_reader :size
+	attr_reader :max_size
 
-	def initialize( size )
-		raise LRUCacheException if size == nil
-		raise LRUCacheException if size <= 0
+	def initialize( max_size )
+		raise LRUCacheException if max_size == nil
+		raise LRUCacheException if max_size <= 0
 
-		@size = size
-		@table = []
+		@max_size = max_size
+		@queue = []
 	end
 
 	# keyとvalueを関連付けて記録
 	def put(key, value)
-		@table << {key => value}
+		@queue << {key => value}
 		
-		if @table.size > size then
-			@table.shift
+		if @queue.size > max_size then
+			@queue.shift
 		end
 	end
 
 	# keyに対応する値を返す
 	def get(key)
-		@table.each do |element|
+		@queue.each do |element|
 			if element.has_key?(key)
-				@table.delete(element)
-				@table << element
+				@queue.delete(element)
+				@queue << element
 				return element[key]
 			end
 		end
@@ -32,7 +32,7 @@ class LRUCache
 	
 	# 最も参照されていないキーを返す
 	def last_recently_used
-		@table[0].keys[0]
+		@queue[0].keys[0]
 	end
 end
 
