@@ -1,8 +1,8 @@
 # LRUCache
-# ˆê’è‚Ì”‚É’B‚µ‚½‚çg‚í‚ê‚Ä‚È‚¢‡‚É—v‘f‚ªíœ‚³‚ê‚Ä‚¢‚­Map‚Ì‚æ‚¤‚È“ü‚ê•¨
+# ä¸€å®šã®æ•°ã«é”ã—ãŸã‚‰ä½¿ã‚ã‚Œã¦ãªã„é †ã«è¦ç´ ãŒå‰Šé™¤ã•ã‚Œã¦ã„ãMapã®ã‚ˆã†ãªå…¥ã‚Œç‰©
 class LRUCache
-	attr_accessor :max_size # Å‘å‹L‰¯ƒTƒCƒY
-	attr_accessor :expire   # ƒf[ƒ^‚Ì—LŒøŠúŒÀ(ƒ~ƒŠ•b)
+	attr_accessor :max_size # æœ€å¤§è¨˜æ†¶ã‚µã‚¤ã‚º
+	attr_accessor :expire   # ãƒ‡ãƒ¼ã‚¿ã®æœ‰åŠ¹æœŸé™(ãƒŸãƒªç§’)
 
 	def initialize( max_size = 10 )
     raise LRUCacheException unless max_size.is_a?(Fixnum)
@@ -10,76 +10,73 @@ class LRUCache
 
 		@max_size = max_size
 		@queue = []
-    @expire = 360000
+		@expire = 360000
 	end
     
-  def max_size=(max_size)
-    @max_size = max_size
-    size_wipeout
-  end
+	def max_size=(max_size)
+		@max_size = max_size
+		size_wipeout
+	end
 
-	# key‚Ævalue‚ğŠÖ˜A•t‚¯‚Ä‹L˜^
+	# keyã¨valueã‚’é–¢é€£ä»˜ã‘ã¦è¨˜éŒ²
 	def put(key, value)
     @queue.delete_if {|v| v.has_key?(key)}
 		@queue << KVS.new(key, value)
     size_wipeout
 	end
 
-	# key‚É‘Î‰‚·‚é’l‚ğ•Ô‚·
+	# keyã«å¯¾å¿œã™ã‚‹å€¤ã‚’è¿”ã™
 	def get(key)
-    time_wipeout
+		time_wipeout
 		@queue.each do |v|
 			if v.has_key?(key)
 				@queue.delete(v)
-        v.touch
+        		v.touch
 				@queue << v
 				return v.value
 			end
 		end
-	  nil
+		nil
 	end
 	
-	# Å‚àQÆ‚³‚ê‚Ä‚¢‚È‚¢ƒL[‚ğ•Ô‚·
+	# æœ€ã‚‚å‚ç…§ã•ã‚Œã¦ã„ãªã„ã‚­ãƒ¼ã‚’è¿”ã™
 	def oldest_key
-    raise LRUCacheException if @queue.first.nil?
-    @queue.first.key
+		raise LRUCacheException if @queue.first.nil?
+		@queue.first.key
 	end
 
   private
 
-  def size_wipeout
-    @queue = @queue.last(max_size)
-  end
+	def size_wipeout
+		@queue = @queue.last(max_size)
+	end
 
-  def time_wipeout(now = Time.now)
-    @queue.delete_if do |i|
-      (now - i.time) * 1000 > @expire
-    end
-  end
+	def time_wipeout(now = Time.now)
+		@queue.delete_if do |i|
+			(now - i.time) * 1000 > @expire
+		end
+	end
+	
+	class KVS
+		attr_reader :key, :value, :time
+    
+    	def initialize(key, value)
+    		@key = key
+    		@value = value
+    		touch
+		end
 
-  class KVS
+		def has_key?(key)
+			@key == key
+		end
 
-    attr_reader :key, :value, :time
-
-    def initialize(key, value)
-      @key = key
-      @value = value
-      touch
-    end
-
-    def has_key?(key)
-      @key == key
-    end
-
-    def touch
-      @time = Time.now
-    end
-
-  end
-
+		def touch
+			@time = Time.now
+		end
+	end
 end
 
-# —áŠOƒNƒ‰ƒX
+# ä¾‹å¤–ã‚¯ãƒ©ã‚¹
 class LRUCacheException < RuntimeError
 end
 
